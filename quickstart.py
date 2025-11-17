@@ -11,10 +11,8 @@ client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 st.title("💭 Dialoguer avec Pascal")
 st.caption("Blaise Pascal (1623-1662)")
 
-
 if "messages" not in st.session_state:
     st.session_state.messages = []
-
 
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
@@ -29,14 +27,20 @@ if prompt := st.chat_input("Posez votre question à Pascal..."):
     
 
     with st.chat_message("assistant"):
-        response = client.messages.create(
+        message_placeholder = st.empty()
+        full_response = ""
+        
+        with client.messages.stream(
             model="claude-sonnet-4-20250514",
             max_tokens=600,
             system=V4_RIGOUREUX,
             messages=[{"role": m["role"], "content": m["content"]} 
                      for m in st.session_state.messages]
-        )
-        reply = response.content[0].text
-        st.markdown(reply)
+        ) as stream:
+            for text in stream.text_stream:
+                full_response += text
+                message_placeholder.markdown(full_response + "▌")
+        
+        message_placeholder.markdown(full_response)
     
-    st.session_state.messages.append({"role": "assistant", "content": reply})
+    st.session_state.messages.append({"role": "assistant", "content": full_response})
