@@ -4,7 +4,7 @@ Agent conversationnel incarnant le philosophe Blaise Pascal (1623-1662).
 
 ##  Prérequis
 
-- Python 3.8 ou plus
+- Python 3.11
 - Une clé API Anthropic ([obtenir une clé](https://console.anthropic.com/settings/keys))
 
 ## Installation rapide
